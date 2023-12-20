@@ -2,13 +2,16 @@
 
 uses
   Vcl.Forms,
-  UFrmMain in 'UFrmMain.pas' {Form1};
+  UFrmBooks in 'UFrmBooks.pas' {FrmBooks},
+  UAppGlobals in 'UAppGlobals.pas',
+  UDbManager in 'UDbManager.pas' {DbManager: TDataModule},
+  UFrmMain in 'UFrmMain.pas' {FrmMain};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TFrmMain, FrmMain);
   Application.Run;
 end.
