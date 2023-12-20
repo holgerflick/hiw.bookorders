@@ -5,7 +5,9 @@ uses
   UFrmBooks in 'UFrmBooks.pas' {FrmBooks},
   UAppGlobals in 'UAppGlobals.pas',
   UDbManager in 'UDbManager.pas' {DbManager: TDataModule},
-  UFrmMain in 'UFrmMain.pas' {FrmMain};
+  UFrmMain in 'UFrmMain.pas' {FrmMain},
+  UFrmStores in 'UFrmStores.pas' {FrmStores},
+  UFrmAvail in 'UFrmAvail.pas' {FrmAvail};
 
 {$R *.res}
 
