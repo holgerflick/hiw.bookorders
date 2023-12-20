@@ -3,8 +3,21 @@
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+    System.Classes
+  , System.SysUtils
+  , System.Variants
+
+  , Vcl.Controls
+  , Vcl.Dialogs
+  , Vcl.Forms
+  , Vcl.Graphics
+  , Vcl.StdCtrls
+
+  , Winapi.Messages
+  , Winapi.Windows
+
+  ;
+
 
 type
   TFrmMain = class(TForm)
@@ -27,7 +40,8 @@ var
 implementation
 
 uses
-  UFrmBooks
+    UFrmStores
+  , UFrmBooks
   ;
 
 {$R *.dfm}
@@ -49,7 +63,7 @@ end;
 
 procedure TFrmMain.ShowStores;
 begin
-
+  TFrmStores.Display;
 end;
 
 end.

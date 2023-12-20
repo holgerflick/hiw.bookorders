@@ -3,13 +3,34 @@
 interface
 
 uses
-  System.SysUtils, System.Classes, FireDAC.Stan.ExprFuncs,
-  FireDAC.Phys.SQLiteWrapper.Stat, FireDAC.Phys.SQLiteDef, FireDAC.Stan.Intf,
-  FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf,
-  FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys,
-  FireDAC.VCLUI.Wait, Data.DB, FireDAC.Comp.Client, FireDAC.Phys.SQLite,
-  FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
-  FireDAC.Comp.DataSet;
+    Data.DB
+
+  , FireDAC.Comp.Client
+  , FireDAC.Comp.DataSet
+  , FireDAC.DApt
+  , FireDAC.DApt.Intf
+  , FireDAC.DatS
+  , FireDAC.Phys
+  , FireDAC.Phys.Intf
+  , FireDAC.Phys.SQLite
+  , FireDAC.Phys.SQLiteDef
+  , FireDAC.Phys.SQLiteWrapper.Stat
+  , FireDAC.Stan.Async
+  , FireDAC.Stan.Def
+  , FireDAC.Stan.Error
+  , FireDAC.Stan.ExprFuncs
+  , FireDAC.Stan.Intf
+  , FireDAC.Stan.Option
+  , FireDAC.Stan.Param
+  , FireDAC.Stan.Pool
+  , FireDAC.UI.Intf
+  , FireDAC.VCLUI.Wait
+
+  , System.Classes
+  , System.SysUtils
+
+  ;
+
 
 type
   TDbManager = class(TDataModule)
@@ -27,6 +48,17 @@ type
     qryEditionsname: TWideStringField;
     qryEditionsbooksId: TIntegerField;
     qryEditionsasin: TWideStringField;
+    qryStores: TFDQuery;
+    qryStoresid: TFDAutoIncField;
+    qryStoresname: TWideStringField;
+    qryStorescountryCode: TWideStringField;
+    qryStoresdomain: TWideStringField;
+    sourceStores: TDataSource;
+    qryUnavailable: TFDQuery;
+    qryAllEditions: TFDQuery;
+    qryAvailableStores: TFDQuery;
+    sourceAllEditions: TDataSource;
+    sourceAvailableStores: TDataSource;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
   strict private
@@ -57,12 +89,16 @@ begin
 
   qryBooks.Open;
   qryEditions.Open;
+  qryStores.Open;
+  qryUnavailable.Open;
 end;
 
 procedure TDbManager.DataModuleDestroy(Sender: TObject);
 begin
+  qryUnavailable.Close;
   qryEditions.Close;
   qryBooks.Close;
+  qryStores.Close;
 end;
 
 class destructor TDbManager.Destroy;

@@ -3,9 +3,27 @@
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Data.DB, Vcl.Grids, Vcl.DBGrids,
-  Vcl.ExtCtrls, Vcl.Buttons, Vcl.DBCtrls;
+    Data.DB
+
+  , System.Classes
+  , System.SysUtils
+  , System.Variants
+
+  , Vcl.Buttons
+  , Vcl.Controls
+  , Vcl.DBCtrls
+  , Vcl.DBGrids
+  , Vcl.Dialogs
+  , Vcl.ExtCtrls
+  , Vcl.Forms
+  , Vcl.Graphics
+  , Vcl.Grids
+
+  , Winapi.Messages
+  , Winapi.Windows
+
+  ;
+
 
 type
   TFrmBooks = class(TForm)
@@ -21,9 +39,6 @@ type
     { Public declarations }
     class procedure Display;
   end;
-
-var
-  FrmBooks: TFrmBooks;
 
 implementation
 

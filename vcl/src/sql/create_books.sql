@@ -16,7 +16,8 @@ create table editions
     name    NCHAR(100),
     booksId integer
         constraint editions_books_id_fk
-            references books
+            references books,
+    asin    VARCHAR(20)
 );
 
 create table stores
