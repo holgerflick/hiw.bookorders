@@ -24,8 +24,12 @@ type
     btnBooks: TButton;
     btnStores: TButton;
     btnAvail: TButton;
+    btnMarkdown: TButton;
+    DlgSave: TFileSaveDialog;
     procedure btnBooksClick(Sender: TObject);
     procedure btnStoresClick(Sender: TObject);
+    procedure btnAvailClick(Sender: TObject);
+    procedure btnMarkdownClick(Sender: TObject);
   private
     { Private declarations }
     procedure ShowBooks;
@@ -40,15 +44,30 @@ var
 implementation
 
 uses
-    UFrmStores
+    UDbManager
+  , UFrmAvail
+  , UFrmStores
   , UFrmBooks
   ;
 
 {$R *.dfm}
 
+procedure TFrmMain.btnAvailClick(Sender: TObject);
+begin
+  TFrmAvail.Display;
+end;
+
 procedure TFrmMain.btnBooksClick(Sender: TObject);
 begin
   ShowBooks;
+end;
+
+procedure TFrmMain.btnMarkdownClick(Sender: TObject);
+begin
+  if DlgSave.Execute then
+  begin
+    TDbManager.Shared.SaveToMarkdown(DlgSave.FileName);
+  end;
 end;
 
 procedure TFrmMain.btnStoresClick(Sender: TObject);

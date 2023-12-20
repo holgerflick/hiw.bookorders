@@ -147,63 +147,122 @@ object DbManager: TDbManager
     Left = 248
     Top = 184
   end
-  object qryUnavailable: TFDQuery
-    ActiveStoredUsage = []
-    MasterSource = sourceEditions
-    MasterFields = 'id'
-    Connection = Connection
-    SQL.Strings = (
-      'SELECT * FROM unavailable WHERE editionId = :id ')
-    Left = 168
-    Top = 256
-    ParamData = <
-      item
-        Name = 'ID'
-        DataType = ftAutoInc
-        ParamType = ptInput
-        Value = Null
-      end>
-  end
   object qryAllEditions: TFDQuery
     ActiveStoredUsage = []
-    Active = True
     Connection = Connection
     SQL.Strings = (
       'SELECT e.id id, e.name, title,subtitle FROM editions e'
-      '  LEFT JOIN books b ON e.booksId = b.id')
+      '  LEFT JOIN books b ON e.booksId = b.id'
+      '  ORDER BY title, subtitle')
     Left = 152
     Top = 376
+    object qryAllEditionsid: TFDAutoIncField
+      DisplayWidth = 10
+      FieldName = 'id'
+      Origin = 'id'
+      ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = False
+    end
+    object qryAllEditionsname: TWideStringField
+      DisplayLabel = 'Edition'
+      DisplayWidth = 25
+      FieldName = 'name'
+      Origin = 'name'
+      FixedChar = True
+      Size = 100
+    end
+    object qryAllEditionstitle: TWideStringField
+      AutoGenerateValue = arDefault
+      DisplayLabel = 'Title'
+      DisplayWidth = 38
+      FieldName = 'title'
+      Origin = 'title'
+      ProviderFlags = []
+      ReadOnly = True
+      FixedChar = True
+      Size = 500
+    end
+    object qryAllEditionssubtitle: TWideStringField
+      AutoGenerateValue = arDefault
+      DisplayLabel = 'Subtitle'
+      DisplayWidth = 500
+      FieldName = 'subtitle'
+      Origin = 'subtitle'
+      ProviderFlags = []
+      ReadOnly = True
+      FixedChar = True
+      Size = 500
+    end
   end
-  object qryAvailableStores: TFDQuery
+  object qryUnavailableStores: TFDQuery
     ActiveStoredUsage = []
     MasterSource = sourceAllEditions
     MasterFields = 'id'
+    DetailFields = 'id'
     Connection = Connection
+    FetchOptions.AssignedValues = [evCache]
+    FetchOptions.Cache = [fiBlobs, fiMeta]
     SQL.Strings = (
-      'SELECT s.id, s.name, s.countryCode, s.domain FROM stores s'
-      
-        '  LEFT JOIN unavailable u ON u.storeid = s.id AND u.editionid = ' +
-        ':id '
-      '  WHERE storeId IS NULL'
+      'SELECT s.id FROM stores s'
+      '  JOIN unavailable u ON u.storeid = s.id AND u.editionid = :id '
+      ''
       ' ')
     Left = 152
     Top = 440
     ParamData = <
       item
         Name = 'ID'
-        DataType = ftInteger
+        DataType = ftAutoInc
         ParamType = ptInput
         Value = 8
       end>
+    object qryUnavailableStoresid: TFDAutoIncField
+      FieldName = 'id'
+      Origin = 'id'
+      ProviderFlags = [pfInWhere, pfInKey]
+      ReadOnly = False
+    end
   end
   object sourceAllEditions: TDataSource
     DataSet = qryAllEditions
     Left = 248
     Top = 376
   end
-  object sourceAvailableStores: TDataSource
-    DataSet = qryAvailableStores
-    Left = 248
-    Top = 440
+  object comRemoveUnavail: TFDCommand
+    Connection = Connection
+    CommandText.Strings = (
+      'DELETE FROM unavailable '
+      '  WHERE (storeId = :storeId) AND (editionId = :editionId)')
+    ActiveStoredUsage = []
+    ParamData = <
+      item
+        Name = 'STOREID'
+        ParamType = ptInput
+      end
+      item
+        Name = 'EDITIONID'
+        ParamType = ptInput
+      end>
+    Left = 408
+    Top = 192
+  end
+  object comAddUnavail: TFDCommand
+    Connection = Connection
+    CommandText.Strings = (
+      
+        'INSERT INTO unavailable (storeId, editionId) VALUES (:storeId, :' +
+        'editionId)')
+    ActiveStoredUsage = []
+    ParamData = <
+      item
+        Name = 'STOREID'
+        ParamType = ptInput
+      end
+      item
+        Name = 'EDITIONID'
+        ParamType = ptInput
+      end>
+    Left = 408
+    Top = 264
   end
 end
