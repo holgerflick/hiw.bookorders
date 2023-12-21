@@ -50,6 +50,7 @@ type
   private
     FTitle: String;
     FSubtitle: String;
+    FPubDate: TDate;
     FId: Integer;
     FEditions: TEditionsDTO;
     FCover: TMemoryStream;
@@ -60,6 +61,7 @@ type
   published
 
     property Id: Integer read FId write FId;
+    property PubDate: TDate read FPubDate write FPubDate;
     property Title: String read FTitle write FTitle;
     property Subtitle: String read FSubtitle write FSubtitle;
     property Cover: TMemoryStream read FCover write FCover;

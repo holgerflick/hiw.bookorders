@@ -40,7 +40,6 @@ uses
 
   ;
 
-
 type
   TFrmBooks = class(TForm)
     Books: TDBGrid;
@@ -52,6 +51,7 @@ type
     Splitter1: TSplitter;
     Editions: TDBGrid;
     Splitter2: TSplitter;
+    Splitter3: TSplitter;
     procedure FormCreate(Sender: TObject);
     procedure CoverDblClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);

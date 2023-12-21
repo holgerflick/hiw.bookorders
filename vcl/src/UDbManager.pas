@@ -95,6 +95,7 @@ uses
   , Neon.Core.Persistence.JSON
   , Neon.Core.Persistence
   , Neon.Core.Types
+  , Neon.Core.Utils
 
   , hyiedefs
   , hyieutils
@@ -240,7 +241,6 @@ const
 
 var
   LLines: TStringList;
-  LBookmark: TBookmark;
 
 begin
   LLines := TStringList.Create;
@@ -270,6 +270,34 @@ begin
       begin
         LLines.Add( '### ' + qryBookssubtitle.AsString  );
       end;
+
+      if not qryBookscover.IsNull then
+      begin
+        // cover
+        var LDataURL := 'data:png/image;base64,';
+
+        var LCover := TIEDBBitmap.Create;
+        try
+          LCover.Read(qryBookscover);
+
+          LCover.Resample(250, -1, rfLanczos3);
+
+          var LOutput := TMemoryStream.Create;
+          try
+            LCover.Write(LOutput, ioPNG);
+
+            LOutput.Position := 0;
+            LDataUrl := LDataUrl + TBase64.Encode(LOutput);
+          finally
+            LOutput.Free;
+          end;
+        finally
+          LCover.Free;
+        end;
+
+        LLines.Add('![Cover image](' + LDataUrl + ')');
+      end;
+
 
       var LBuffer := '| Store | ';
       var LSep := '|' + MD_SEP_LEFT;

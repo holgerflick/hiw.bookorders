@@ -80,6 +80,14 @@ object FrmBooks: TFrmBooks
       ExplicitTop = 24
       ExplicitHeight = 100
     end
+    object Splitter3: TSplitter
+      Left = 521
+      Top = 0
+      Height = 359
+      ExplicitLeft = 744
+      ExplicitTop = 200
+      ExplicitHeight = 100
+    end
     object Panel2: TPanel
       Left = 0
       Top = 0
@@ -102,7 +110,7 @@ object FrmBooks: TFrmBooks
     object Editions: TDBGrid
       Left = 228
       Top = 0
-      Width = 261
+      Width = 293
       Height = 359
       Align = alLeft
       DataSource = DbManager.sourceEditions
