@@ -32,8 +32,9 @@ object FrmAvail: TFrmAvail
     Columns = <
       item
         Expanded = False
-        FieldName = 'title'
-        Width = 395
+        FieldName = 'gridTitle'
+        Title.Caption = 'Title'
+        Width = 484
         Visible = True
       end
       item

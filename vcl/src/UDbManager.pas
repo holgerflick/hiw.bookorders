@@ -31,7 +31,6 @@ uses
 
   ;
 
-
 type
   TDbManager = class(TDataModule)
     SQLite: TFDPhysSQLiteDriverLink;
@@ -64,6 +63,8 @@ type
     qryUnavailableStoresid: TFDAutoIncField;
     comRemoveUnavail: TFDCommand;
     comAddUnavail: TFDCommand;
+    qryAllEditionsgridTitle: TWideStringField;
+    qryBookspublished: TDateField;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
   strict private
@@ -79,12 +80,26 @@ type
     procedure RemoveFromUnavailable( AEditionId, AStoreId: Integer );
 
     procedure SaveToMarkdown(AFilename: String);
+    procedure SaveToJson(AFilename: String);
   end;
 
 implementation
 
 uses
-  UAppGlobals
+    UTypes
+  , UAppGlobals
+
+  , System.IOUtils
+  , System.TypInfo
+
+  , Neon.Core.Persistence.JSON
+  , Neon.Core.Persistence
+  , Neon.Core.Types
+
+  , hyiedefs
+  , hyieutils
+  , iexBitmaps
+  , iexDBBitmaps
   ;
 
 {%CLASSGROUP 'Vcl.Controls.TControl'}
@@ -132,6 +147,92 @@ begin
   comRemoveUnavail.Execute;
 end;
 
+procedure TDbManager.SaveToJson(AFilename: String);
+var
+ LPayload: TPayload;
+
+begin
+  LPayload := TPayload.Create;
+  try
+    qryStores.First;
+    while not qryStores.eof do
+    begin
+      var LStore := TStoreDTO.Create;
+      LStore.Id := qryStoresId.AsInteger;
+      LStore.Name := qryStoresname.AsString;
+      LStore.Domain := qryStoresdomain.AsString;
+      LStore.CountryIso := qryStorescountryCode.AsString;
+
+      LPayload.Stores.Add( LStore );
+
+      qryStores.Next;
+    end;
+
+
+    qryBooks.First;
+    while not qryBooks.Eof do
+    begin
+      var LBook := TBookDTO.Create;
+      LBook.Id := qryBooksId.AsInteger;
+      LBook.Title := qryBookstitle.AsString;
+      LBook.Subtitle := qryBookssubtitle.AsString;
+
+      if not qryBooksCover.IsNull then
+      begin
+        var LCover := TIEDBBitmap.Create;
+        try
+          LCover.Read( qryBooksCover );
+          LCover.Resample( 500, -1, rfLanczos3  );
+
+          LBook.Cover.Clear;
+          LCover.Write(LBook.Cover, ioPNG );
+        finally
+          LCover.Free;
+        end;
+      end;
+
+      qryEditions.First;
+      while not qryEditions.Eof do
+      begin
+        var LEdition := TEditionDTO.Create;
+        LEdition.Id := qryEditionsId.AsInteger;
+        LEdition.Name := qryEditionsname.AsString;
+        LEdition.AmazonId := qryEditionsasin.AsString;
+
+        qryAllEditions.Locate('id', qryEditionsid.AsInteger, [] );
+
+        for var LStore in LPayload.Stores do
+        begin
+          var LIsUnavailable := qryUnavailableStores.Locate('id', LStore.Id, [] );
+
+          if not LIsUnavailable then
+          begin
+            LEdition.Stores.Add(LStore.Id);
+          end;
+        end;
+
+        LBook.Editions.Add(LEdition);
+
+        qryEditions.Next;
+      end;
+
+      LPayload.Books.Add(LBook);
+
+      qryBooks.Next;
+    end;
+    var LConfig := TNeonConfiguration.Default
+      .SetMemberCase(TNeonCase.CamelCase)
+      .SetMembers([TNeonMembers.Properties])
+      .SetVisibility([mvPublished])
+      ;
+
+    var LJSON := TNeon.ObjectToJSONString(LPayload, LConfig);
+    TFile.WriteAllText(AFilename, LJSON);
+  finally
+    LPayload.Free;
+  end;
+end;
+
 procedure TDbManager.SaveToMarkdown(AFilename: String);
 const
   MD_SEP_CENTER = ' :---: |';
@@ -150,12 +251,24 @@ begin
 
     qryBooks.First;
 
+    var LHeader :=
+    '''
+    ---
+    title: List of all books
+    tags:
+       - Delphi
+    ---
+    ''';
+
+    LLines.Add(LHeader);
+    LLines.Add('# List of all books');
+
     while not qryBooks.Eof do
     begin
-      LLines.Add( '# ' + qryBookstitle.AsString );
+      LLines.Add( '## ' + qryBookstitle.AsString );
       if not qryBookssubtitle.AsString.IsEmpty then
       begin
-        LLines.Add( '*' + qryBookssubtitle.AsString + '*' );
+        LLines.Add( '### ' + qryBookssubtitle.AsString  );
       end;
 
       var LBuffer := '| Store | ';
@@ -181,6 +294,9 @@ begin
         qryEditions.First;
         while not qryEditions.Eof do
         begin
+          // navigate in qryAllEditions as that is linked to qryUnavailableStores
+          qryAllEditions.Locate('id', qryEditionsId.AsInteger, [] );
+
           var LIsUnavailable := qryUnavailableStores.Locate( 'id',
             qryStoresid.AsInteger, [] );
 

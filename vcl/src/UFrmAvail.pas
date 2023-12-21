@@ -26,6 +26,8 @@ type
     procedure SetupDataSources;
     procedure UpdateCheckboxes;
     procedure ToggleStoreAvail;
+
+    procedure Reopen;
   public
     { Public declarations }
 
@@ -63,6 +65,12 @@ begin
   UpdateCheckboxes;
 end;
 
+procedure TFrmAvail.Reopen;
+begin
+  FUnavailStores.Close;
+  FUnavailStores.Open;
+end;
+
 procedure TFrmAvail.SetupDataSources;
 begin
   FAllEditions := TDbManager.Shared.qryAllEditions;
@@ -74,6 +82,8 @@ begin
   FUnavailStores := TDbManager.Shared.qryUnavailableStores;
 
   FAllEditions.AfterScroll := OnAfterScroll;
+
+  Reopen;
 
   UpdateCheckboxes;
 end;
@@ -103,10 +113,7 @@ begin
   begin
     TDbManager.Shared.AddToUnavailable( LEditionId, LStoreId );
   end;
-
-  FUnavailStores.Close;
-  FUnavailStores.Open;
-
+  Reopen;
   UpdateCheckboxes;
 end;
 

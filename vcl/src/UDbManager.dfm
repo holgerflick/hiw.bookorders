@@ -27,7 +27,8 @@ object DbManager: TDbManager
     ActiveStoredUsage = []
     Connection = Connection
     SQL.Strings = (
-      'SELECT * FROM books')
+      'SELECT * FROM books'
+      '  ORDER BY published DESC')
     Left = 168
     Top = 40
     object qryBooksid: TFDAutoIncField
@@ -56,6 +57,12 @@ object DbManager: TDbManager
       DisplayLabel = 'Cover Image'
       FieldName = 'cover'
       Origin = 'cover'
+    end
+    object qryBookspublished: TDateField
+      DisplayLabel = 'PubDate'
+      FieldName = 'published'
+      Origin = 'published'
+      EditMask = '!99/99/00;1;_'
     end
   end
   object qryEditions: TFDQuery
@@ -151,11 +158,13 @@ object DbManager: TDbManager
     ActiveStoredUsage = []
     Connection = Connection
     SQL.Strings = (
-      'SELECT e.id id, e.name, title,subtitle FROM editions e'
+      
+        'SELECT e.id id, e.name, title,subtitle, (title || '#39' '#39' || subtitl' +
+        'e) as gridTitle FROM editions e'
       '  LEFT JOIN books b ON e.booksId = b.id'
       '  ORDER BY title, subtitle')
-    Left = 152
-    Top = 376
+    Left = 168
+    Top = 256
     object qryAllEditionsid: TFDAutoIncField
       DisplayWidth = 10
       FieldName = 'id'
@@ -193,6 +202,14 @@ object DbManager: TDbManager
       FixedChar = True
       Size = 500
     end
+    object qryAllEditionsgridTitle: TWideStringField
+      AutoGenerateValue = arDefault
+      FieldName = 'gridTitle'
+      Origin = 'gridTitle'
+      ProviderFlags = []
+      ReadOnly = True
+      Size = 32767
+    end
   end
   object qryUnavailableStores: TFDQuery
     ActiveStoredUsage = []
@@ -207,8 +224,8 @@ object DbManager: TDbManager
       '  JOIN unavailable u ON u.storeid = s.id AND u.editionid = :id '
       ''
       ' ')
-    Left = 152
-    Top = 440
+    Left = 168
+    Top = 320
     ParamData = <
       item
         Name = 'ID'
@@ -225,8 +242,8 @@ object DbManager: TDbManager
   end
   object sourceAllEditions: TDataSource
     DataSet = qryAllEditions
-    Left = 248
-    Top = 376
+    Left = 264
+    Top = 256
   end
   object comRemoveUnavail: TFDCommand
     Connection = Connection

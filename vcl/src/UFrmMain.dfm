@@ -2,7 +2,7 @@ object FrmMain: TFrmMain
   Left = 0
   Top = 0
   Caption = 'Manage Book orders'
-  ClientHeight = 185
+  ClientHeight = 246
   ClientWidth = 375
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -47,6 +47,15 @@ object FrmMain: TFrmMain
     TabOrder = 3
     OnClick = btnMarkdownClick
   end
+  object btnJSON: TButton
+    Left = 24
+    Top = 135
+    Width = 216
+    Height = 49
+    Caption = 'Save as JSON...'
+    TabOrder = 4
+    OnClick = btnJSONClick
+  end
   object DlgSave: TFileSaveDialog
     DefaultExtension = 'md'
     FavoriteLinks = <>
@@ -59,5 +68,18 @@ object FrmMain: TFrmMain
     Title = 'Save as Markdown'
     Left = 264
     Top = 96
+  end
+  object DlgSaveJson: TFileSaveDialog
+    DefaultExtension = 'md'
+    FavoriteLinks = <>
+    FileTypes = <
+      item
+        DisplayName = 'JSON (*.json)'
+        FileMask = '*.json'
+      end>
+    Options = [fdoOverWritePrompt, fdoPathMustExist]
+    Title = 'Save as Markdown'
+    Left = 272
+    Top = 168
   end
 end

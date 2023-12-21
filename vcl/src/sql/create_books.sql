@@ -30,13 +30,15 @@ create table stores
     domain      VARCHAR(10)
 );
 
-create table availablebooks
+create table unavailable
 (
     storeId   integer not null
         constraint availablebooks_stores_id_fk
             references stores,
-    editionId integer
+    editionId integer not null
         constraint availablebooks_editions_id_fk
-            references editions
+            references editions,
+    constraint availablebooks_pk
+        primary key (storeId, editionId)
 );
 

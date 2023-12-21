@@ -127,26 +127,22 @@
         </DelphiCompile>
         <DCCReference Include="UFrmBooks.pas">
             <Form>FrmBooks</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="UAppGlobals.pas"/>
         <DCCReference Include="UDbManager.pas">
             <Form>DbManager</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <DCCReference Include="UFrmMain.pas">
             <Form>FrmMain</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="UFrmStores.pas">
             <Form>FrmStores</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="UFrmAvail.pas">
             <Form>FrmAvail</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="UTypes.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

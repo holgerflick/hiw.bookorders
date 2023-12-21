@@ -26,10 +26,13 @@ type
     btnAvail: TButton;
     btnMarkdown: TButton;
     DlgSave: TFileSaveDialog;
+    btnJSON: TButton;
+    DlgSaveJson: TFileSaveDialog;
     procedure btnBooksClick(Sender: TObject);
     procedure btnStoresClick(Sender: TObject);
     procedure btnAvailClick(Sender: TObject);
     procedure btnMarkdownClick(Sender: TObject);
+    procedure btnJSONClick(Sender: TObject);
   private
     { Private declarations }
     procedure ShowBooks;
@@ -60,6 +63,14 @@ end;
 procedure TFrmMain.btnBooksClick(Sender: TObject);
 begin
   ShowBooks;
+end;
+
+procedure TFrmMain.btnJSONClick(Sender: TObject);
+begin
+  if DlgSaveJson.Execute then
+  begin
+    TDbManager.Shared.SaveToJson(DlgSaveJson.FileName);
+  end;
 end;
 
 procedure TFrmMain.btnMarkdownClick(Sender: TObject);
