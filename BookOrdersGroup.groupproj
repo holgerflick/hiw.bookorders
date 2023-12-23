@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{020DD1AB-B861-40C6-BD1D-08795EF6CEE9}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="vcl\src\BookOrdersWin.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="web\src\BookOrdersWeb.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="BookOrdersWin">
+        <MSBuild Projects="vcl\src\BookOrdersWin.dproj"/>
+    </Target>
+    <Target Name="BookOrdersWin:Clean">
+        <MSBuild Projects="vcl\src\BookOrdersWin.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="BookOrdersWin:Make">
+        <MSBuild Projects="vcl\src\BookOrdersWin.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="BookOrdersWeb">
+        <MSBuild Projects="web\src\BookOrdersWeb.dproj"/>
+    </Target>
+    <Target Name="BookOrdersWeb:Clean">
+        <MSBuild Projects="web\src\BookOrdersWeb.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="BookOrdersWeb:Make">
+        <MSBuild Projects="web\src\BookOrdersWeb.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="BookOrdersWin;BookOrdersWeb"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="BookOrdersWin:Clean;BookOrdersWeb:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="BookOrdersWin:Make;BookOrdersWeb:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
