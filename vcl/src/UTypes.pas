@@ -6,8 +6,6 @@ uses
     System.Generics.Collections
   , System.Classes
   , System.SysUtils
-
-  , Vcl.Graphics
   ;
 
 type

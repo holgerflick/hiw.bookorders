@@ -25,9 +25,9 @@ type
     btnStores: TButton;
     btnAvail: TButton;
     btnMarkdown: TButton;
-    DlgSave: TFileSaveDialog;
     btnJSON: TButton;
     DlgSaveJson: TFileSaveDialog;
+    DlgFolder: TFileOpenDialog;
     procedure btnBooksClick(Sender: TObject);
     procedure btnStoresClick(Sender: TObject);
     procedure btnAvailClick(Sender: TObject);
@@ -75,9 +75,9 @@ end;
 
 procedure TFrmMain.btnMarkdownClick(Sender: TObject);
 begin
-  if DlgSave.Execute then
+  if DlgFolder.Execute then
   begin
-    TDbManager.Shared.SaveToMarkdown(DlgSave.FileName);
+    TDbManager.Shared.SaveToMarkdown(DlgFolder.FileName);
   end;
 end;
 

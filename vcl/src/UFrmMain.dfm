@@ -56,19 +56,6 @@ object FrmMain: TFrmMain
     TabOrder = 4
     OnClick = btnJSONClick
   end
-  object DlgSave: TFileSaveDialog
-    DefaultExtension = 'md'
-    FavoriteLinks = <>
-    FileTypes = <
-      item
-        DisplayName = 'Markdown (*.md)'
-        FileMask = '*.md'
-      end>
-    Options = [fdoOverWritePrompt, fdoPathMustExist]
-    Title = 'Save as Markdown'
-    Left = 264
-    Top = 96
-  end
   object DlgSaveJson: TFileSaveDialog
     DefaultExtension = 'md'
     FavoriteLinks = <>
@@ -81,5 +68,13 @@ object FrmMain: TFrmMain
     Title = 'Save as Markdown'
     Left = 272
     Top = 168
+  end
+  object DlgFolder: TFileOpenDialog
+    FavoriteLinks = <>
+    FileTypes = <>
+    Options = [fdoPickFolders]
+    Title = 'Pick folder for Makdown export'
+    Left = 272
+    Top = 112
   end
 end

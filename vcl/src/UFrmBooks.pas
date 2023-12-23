@@ -36,7 +36,7 @@ uses
   , ieview
   , imageenview
   , ieopensavedlg
-  , iexDBBitmaps
+  , iexDBBitmaps, AdvMemo, DBAdvMemo
 
   ;
 
@@ -51,6 +51,7 @@ type
     Splitter1: TSplitter;
     Editions: TDBGrid;
     Splitter2: TSplitter;
+    Description: TDBAdvMemo;
     Splitter3: TSplitter;
     procedure FormCreate(Sender: TObject);
     procedure CoverDblClick(Sender: TObject);

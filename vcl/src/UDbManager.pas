@@ -65,6 +65,7 @@ type
     comAddUnavail: TFDCommand;
     qryAllEditionsgridTitle: TWideStringField;
     qryBookspublished: TDateField;
+    qryBooksdescription: TWideMemoField;
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
   strict private
@@ -79,7 +80,7 @@ type
     procedure AddToUnavailable( AEditionId, AStoreId: Integer );
     procedure RemoveFromUnavailable( AEditionId, AStoreId: Integer );
 
-    procedure SaveToMarkdown(AFilename: String);
+    procedure SaveToMarkdown(AFolder: String);
     procedure SaveToJson(AFilename: String);
   end;
 
@@ -177,16 +178,20 @@ begin
       LBook.Id := qryBooksId.AsInteger;
       LBook.Title := qryBookstitle.AsString;
       LBook.Subtitle := qryBookssubtitle.AsString;
+      LBook.PubDate := qryBookspublished.AsDateTime;
 
       if not qryBooksCover.IsNull then
       begin
         var LCover := TIEDBBitmap.Create;
         try
+          LCover.ParamsEnabled := True;
           LCover.Read( qryBooksCover );
+
           LCover.Resample( 500, -1, rfLanczos3  );
 
           LBook.Cover.Clear;
-          LCover.Write(LBook.Cover, ioPNG );
+          LCover.Params.JPEG_Quality := 80;
+          LCover.Write(LBook.Cover, ioJPEG );
         finally
           LCover.Free;
         end;
@@ -234,10 +239,11 @@ begin
   end;
 end;
 
-procedure TDbManager.SaveToMarkdown(AFilename: String);
+procedure TDbManager.SaveToMarkdown(AFolder: String);
 const
   MD_SEP_CENTER = ' :---: |';
   MD_SEP_LEFT = ' :--- |';
+  COVER_WIDTH = 250;
 
 var
   LLines: TStringList;
@@ -245,36 +251,50 @@ var
 begin
   LLines := TStringList.Create;
 
-  try
-    // TODO: add enable/disable controls
-    // TODO: add bookmarks
+  var LIndex := TPath.Combine( AFolder, 'index.md' );
 
+  try
     qryBooks.First;
 
     var LHeader :=
     '''
     ---
-    title: List of all books
-    tags:
-       - Delphi
+        tags:
+            - Delphi
     ---
     ''';
 
-    LLines.Add(LHeader);
-    LLines.Add('# List of all books');
-
+    var LCount := 0;
     while not qryBooks.Eof do
     begin
-      LLines.Add( '## ' + qryBookstitle.AsString );
+      LLines.Clear;
+      LLines.Add( Format(
+        LHeader,
+        [ qryBooksTitle.AsString, qryBooksSubtitle.AsString ] )
+      );
+
+      var LTitle := qryBooksTitle.AsString;
+      LLines.Add('# ' + LTitle );
+
       if not qryBookssubtitle.AsString.IsEmpty then
       begin
-        LLines.Add( '### ' + qryBookssubtitle.AsString  );
+        LLines.Add('*' + qryBookssubtitle.AsString + '*');
       end;
 
+      LLines.Add('');
+
+      LLines.Add( qryBooksDescription.AsString );
+      LLines.Add('');
+
+      LLines.Add('## Learn more');
       if not qryBookscover.IsNull then
       begin
         // cover
-        var LDataURL := 'data:png/image;base64,';
+        var LImgFileName := Format(
+          'cover_%d_%d.png',
+          [ qryBooksid.AsInteger, COVER_WIDTH ]
+          );
+        var LImgPath := TPath.Combine( AFolder, LImgFilename );
 
         var LCover := TIEDBBitmap.Create;
         try
@@ -282,12 +302,9 @@ begin
 
           LCover.Resample(250, -1, rfLanczos3);
 
-          var LOutput := TMemoryStream.Create;
+          var LOutput := TFileStream.Create(LImgPath, fmCreate );
           try
             LCover.Write(LOutput, ioPNG);
-
-            LOutput.Position := 0;
-            LDataUrl := LDataUrl + TBase64.Encode(LOutput);
           finally
             LOutput.Free;
           end;
@@ -295,9 +312,8 @@ begin
           LCover.Free;
         end;
 
-        LLines.Add('![Cover image](' + LDataUrl + ')');
+        LLines.Add('![Cover image](' + LImgFileName + '){align=left}');
       end;
-
 
       var LBuffer := '| Store | ';
       var LSep := '|' + MD_SEP_LEFT;
@@ -349,10 +365,21 @@ begin
       end;
 
       LLines.Add('');
+
+      Inc(LCount);
+      var LBookFile := TPath.Combine(
+          AFolder,
+          Format( 'book%d.md', [ LCount ] )
+          );
+
+
+      LLines.SaveToFile(LBookFile);
+
+
       qryBooks.Next;
     end;
 
-    LLines.SaveToFile(AFilename);
+
   finally
     LLines.Free;
   end;

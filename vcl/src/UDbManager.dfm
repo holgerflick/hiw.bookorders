@@ -1,8 +1,8 @@
 object DbManager: TDbManager
   OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy
-  Height = 503
-  Width = 524
+  Height = 402
+  Width = 520
   object SQLite: TFDPhysSQLiteDriverLink
     EngineLinkage = slStatic
     Left = 40
@@ -18,7 +18,6 @@ object DbManager: TDbManager
       'StringFormat=Unicode'
       'DriverID=SQLite')
     ConnectedStoredUsage = []
-    Connected = True
     LoginPrompt = False
     Left = 40
     Top = 40
@@ -63,6 +62,11 @@ object DbManager: TDbManager
       FieldName = 'published'
       Origin = 'published'
       EditMask = '!99/99/00;1;_'
+    end
+    object qryBooksdescription: TWideMemoField
+      FieldName = 'description'
+      Origin = 'description'
+      BlobType = ftWideMemo
     end
   end
   object qryEditions: TFDQuery
