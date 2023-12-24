@@ -6,6 +6,7 @@ uses
     System.Classes
   , System.SysUtils
   , System.Variants
+  , System.UITypes
 
   , Vcl.Controls
   , Vcl.Dialogs
@@ -17,7 +18,6 @@ uses
   , Winapi.Windows
 
   ;
-
 
 type
   TFrmMain = class(TForm)

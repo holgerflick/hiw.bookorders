@@ -52,6 +52,7 @@ type
     FId: Integer;
     FEditions: TEditionsDTO;
     FCover: TMemoryStream;
+    FDescription: String;
   public
     constructor Create;
     destructor Destroy; override;
@@ -63,6 +64,7 @@ type
     property Title: String read FTitle write FTitle;
     property Subtitle: String read FSubtitle write FSubtitle;
     property Cover: TMemoryStream read FCover write FCover;
+    property Description: String read FDescription write FDescription;
 
     property Editions: TEditionsDTO read FEditions write FEditions;
 

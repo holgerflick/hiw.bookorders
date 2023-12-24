@@ -3,7 +3,7 @@ object FrmBooks: TFrmBooks
   Top = 0
   Caption = 'Manage books  and editions'
   ClientHeight = 610
-  ClientWidth = 1205
+  ClientWidth = 1163
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,7 +16,7 @@ object FrmBooks: TFrmBooks
   object Splitter2: TSplitter
     Left = 0
     Top = 248
-    Width = 1205
+    Width = 1163
     Height = 3
     Cursor = crVSplit
     Align = alTop
@@ -25,7 +25,7 @@ object FrmBooks: TFrmBooks
   object Splitter3: TSplitter
     Left = 0
     Top = 397
-    Width = 1205
+    Width = 1163
     Height = 3
     Cursor = crVSplit
     Align = alBottom
@@ -35,7 +35,7 @@ object FrmBooks: TFrmBooks
   object Books: TDBGrid
     Left = 0
     Top = 31
-    Width = 1205
+    Width = 1163
     Height = 217
     Align = alTop
     DataSource = DbManager.sourceBooks
@@ -68,21 +68,22 @@ object FrmBooks: TFrmBooks
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 1199
+    Width = 1157
     Height = 25
     VisibleButtons = [nbFirst, nbLast, nbDelete, nbPost, nbCancel]
     Align = alTop
     TabOrder = 1
-    ExplicitWidth = 946
+    ExplicitWidth = 1199
   end
   object Panel1: TPanel
     Left = 0
     Top = 400
-    Width = 1205
+    Width = 1163
     Height = 210
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
+    ExplicitWidth = 1205
     object Splitter1: TSplitter
       Left = 225
       Top = 0
@@ -99,7 +100,6 @@ object FrmBooks: TFrmBooks
       Align = alLeft
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitHeight = 359
       object Cover: TImageEnView
         Left = 0
         Top = 0
@@ -109,13 +109,12 @@ object FrmBooks: TFrmBooks
         TabOrder = 0
         OnDblClick = CoverDblClick
         AutoShrink = True
-        ExplicitHeight = 359
       end
     end
     object Editions: TDBGrid
       Left = 228
       Top = 0
-      Width = 977
+      Width = 935
       Height = 210
       Align = alClient
       DataSource = DbManager.sourceEditions
@@ -143,7 +142,7 @@ object FrmBooks: TFrmBooks
   object Description: TDBAdvMemo
     Left = 0
     Top = 251
-    Width = 1205
+    Width = 1163
     Height = 146
     Cursor = crIBeam
     ActiveLineSettings.ShowActiveLine = False
@@ -227,7 +226,7 @@ object FrmBooks: TFrmBooks
       '')
     MarkerList.UseDefaultMarkerImageIndex = False
     MarkerList.DefaultMarkerImageIndex = -1
-    MarkerList.ImageTransparentColor = -1
+    MarkerList.ImageTransparentColor = 33554432
     OleDropTarget = []
     PrintOptions.MarginLeft = 0
     PrintOptions.MarginRight = 0
@@ -262,7 +261,7 @@ object FrmBooks: TFrmBooks
     WordWrap = wwNone
     DataField = 'description'
     DataSource = DbManager.sourceBooks
-    ExplicitHeight = 78
+    ExplicitWidth = 1205
   end
   object DlgOpenImage: TOpenImageEnDialog
     ZoomFilter = rfLanczos3
