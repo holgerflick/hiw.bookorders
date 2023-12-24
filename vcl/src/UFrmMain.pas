@@ -70,6 +70,7 @@ begin
   if DlgSaveJson.Execute then
   begin
     TDbManager.Shared.SaveToJson(DlgSaveJson.FileName);
+    TaskMessageDlg('Success.', 'JSON document has been created.', mtInformation, [mbOK], 0);
   end;
 end;
 
@@ -78,6 +79,7 @@ begin
   if DlgFolder.Execute then
   begin
     TDbManager.Shared.SaveToMarkdown(DlgFolder.FileName);
+    TaskMessageDlg('Success.', 'Markdown files have been created.', mtInformation, [mbOK], 0);
   end;
 end;
 

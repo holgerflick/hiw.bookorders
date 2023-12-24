@@ -14,11 +14,14 @@ type
     sourceEditions: TDataSource;
     procedure FormCreate(Sender: TObject);
     procedure StoresClickCheck(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     FAllEditions: TDataSet;
 
     FAllStores: TDataSet;
     FUnavailStores: TDataSet;
+
+    FOnOldAfterScroll: TDataSetNotifyEvent;
 
     { Private declarations }
     procedure OnAfterScroll(Sender: TDataSet);
@@ -60,6 +63,11 @@ begin
   SetupDataSources;
 end;
 
+procedure TFrmAvail.FormDestroy(Sender: TObject);
+begin
+  FAllEditions.AfterScroll := FOnOldAfterScroll;
+end;
+
 procedure TFrmAvail.OnAfterScroll(Sender: TDataSet);
 begin
   UpdateCheckboxes;
@@ -81,6 +89,7 @@ begin
   FAllStores := TDbManager.Shared.qryStores;
   FUnavailStores := TDbManager.Shared.qryUnavailableStores;
 
+  FOnOldAfterScroll := FAllEditions.AfterScroll;
   FAllEditions.AfterScroll := OnAfterScroll;
 
   Reopen;

@@ -11,6 +11,7 @@ object FrmAvail: TFrmAvail
   Font.Name = 'Segoe UI'
   Font.Style = []
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   DesignSize = (
     861
     530)
@@ -54,7 +55,6 @@ object FrmAvail: TFrmAvail
     ItemHeight = 20
     TabOrder = 1
     OnClickCheck = StoresClickCheck
-    ExplicitTop = 299
   end
   object sourceEditions: TDataSource
     Left = 728
