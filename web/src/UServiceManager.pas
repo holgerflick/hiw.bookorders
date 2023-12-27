@@ -20,13 +20,19 @@ type
     { Public declarations }
 
     procedure RequestBooks;
+    function GetStoreById( AId: Integer ): TStoreDTO;
 
     property OnBooksReady: TNotifyEvent read FOnBooksReady write FOnBooksReady;
+    property Payload: TPayload read FPayload;
   end;
 
 
 
 implementation
+
+uses
+  Bcl.Utils
+  ;
 
 {%CLASSGROUP 'Vcl.Controls.TControl'}
 
@@ -34,14 +40,46 @@ implementation
 
 { TServiceManager }
 
+function TServiceManager.GetStoreById(AId: Integer): TStoreDTO;
+var
+  i: Integer;
+begin
+  Result := nil;
+  i := 0;
+  while i< Payload.Stores.Count  do
+  begin
+    if Payload.Stores[i].Id = AId then
+    begin
+      Result := Payload.Stores[i];
+      Exit;
+    end;
+
+    Inc(i);
+  end;
+end;
+
 procedure TServiceManager.ProcessResponse(AContent: JSValue);
 var
+  LEncoded: String;
+  LBytes: TBytesStream;
+
   LStoresArr: TJSArray;
   LStoreObj: TJSObject;
 
+  LBooksArr: TJSArray;
+  LBookObj: TJSObject;
+
+  LStoreIds: TJSArray;
+
+  LEditionsArr: TJSArray;
+  LEditionObj: TJSObject;
+
   LRoot: TJSObject;
   LStore: TStoreDTO;
-
+  LBook: TBookDTO;
+  LEdition: TEditionDTO;
+  k,
+  j,
   i: Integer;
 begin
   FPayload.Free;
@@ -65,9 +103,58 @@ begin
     FPayload.Stores.Add(LStore);
   end;
 
+  LBooksArr := TJSArray( LRoot['books'] );
+
+  for i := 0 to LBooksArr.Length -1 do
+  begin
+    LBookObj := TJSObject( LBooksArr[i] );
+    LBook := TBookDTO.Create;
+    LBook.Id := JS.toInteger( LBookObj['id'] );
+    LBook.PubDate := TBclUtils.ISOToDate( COPY( JS.toString( LBookObj['pubDate'] ), 1, 10 ) );
+    LBook.Title := JS.toString( LBookObj['title'] );
+    LBook.Subtitle := JS.toString( LBookObj['subtitle'] );
+    LBook.Description := JS.toString( LBookObj['description'] );
+
+    LEncoded := JS.toString( LBookObj['cover'] );
+    if LEncoded <> '' then
+    begin
+//      LBytes := TBytesStream.Create( TBclUtils.DecodeBase64(LEncoded) );
+//      try
+//        LBytes.Position := 0;
+//        LBook.Cover.LoadFromStream(LBytes);
+//      finally
+//        LBytes.Free;
+//      end;
+
+       LEncoded := 'data:image/png;base64,' + LEncoded;
+       LBook.CoverDataUrl := LEncoded;
+       console.log(LEncoded);
+    end;
+
+    // editions
+    LEditionsArr := TJSArray( LBookObj['editions'] );
+    for j := 0 to LEditionsArr.Length - 1 do
+    begin
+      LEdition := TEditionDTO.Create;
+      LEditionObj := TJSObject( LEditionsArr[j] );
+      LEdition.Id := JS.toInteger( LEditionObj['id'] );
+      LEdition.Name := JS.toString( LEditionObj['name'] );
+      LEdition.AmazonId := JS.toString( LEditionObj['amazonId'] );
+
+      LStoreIds := TJSArray( LEditionObj['stores'] );
+      for k := 0 to LStoreIds.Length -1 do
+      begin
+        LEdition.Stores.Add( JS.toInteger( LStoreIds[k] ) );
+      end;
+
+      LBook.Editions.Add(LEdition);
+    end;
 
 
-  console.log(FPayload);
+    FPayload.Books.Add(LBook);
+  end;
+
+  // console.log(FPayload);
 end;
 
 procedure TServiceManager.RequestBooks;
@@ -76,6 +163,11 @@ begin
     procedure(AResponse: string; ARequest: TJSXMLHttpRequest)
     begin
       ProcessResponse(ARequest.response);
+
+      if Assigned( FOnBooksReady ) then
+      begin
+        FOnBooksReady(Self);
+      end;
     end,
     procedure(ARequest: TJSXMLHttpRequest)
     begin

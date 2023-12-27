@@ -6,6 +6,7 @@ uses
     System.Generics.Collections
   , System.Classes
   , System.SysUtils
+
   ;
 
 type
@@ -53,6 +54,7 @@ type
     FEditions: TEditionsDTO;
     FCover: TMemoryStream;
     FDescription: String;
+    FCoverDataUrl: String;
   public
     constructor Create;
     destructor Destroy; override;
@@ -64,6 +66,11 @@ type
     property Title: String read FTitle write FTitle;
     property Subtitle: String read FSubtitle write FSubtitle;
     property Cover: TMemoryStream read FCover write FCover;
+
+    // This will only be used by the TMS WEB Core client. Will be empty in
+    // VCL application.
+
+    property CoverDataUrl: String read FCoverDataUrl write FCoverDataUrl;
     property Description: String read FDescription write FDescription;
 
     property Editions: TEditionsDTO read FEditions write FEditions;

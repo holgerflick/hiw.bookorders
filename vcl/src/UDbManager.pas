@@ -179,6 +179,7 @@ begin
       LBook.Title := qryBookstitle.AsString;
       LBook.Subtitle := qryBookssubtitle.AsString;
       LBook.PubDate := qryBookspublished.AsDateTime;
+      LBook.Description := qryBooksdescription.AsString;
 
       if not qryBooksCover.IsNull then
       begin
@@ -230,10 +231,12 @@ begin
       .SetMemberCase(TNeonCase.CamelCase)
       .SetMembers([TNeonMembers.Properties])
       .SetVisibility([mvPublished])
+      .SetPrettyPrint(False)
       ;
 
-    var LJSON := TNeon.ObjectToJSONString(LPayload, LConfig);
-    TFile.WriteAllText(AFilename, LJSON);
+    var LJSON := TNeon.ObjectToJSON(LPayload, LConfig);
+
+    TFile.WriteAllText(AFilename, LJSON.ToString);
   finally
     LPayload.Free;
   end;
