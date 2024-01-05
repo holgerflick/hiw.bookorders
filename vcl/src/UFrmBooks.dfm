@@ -73,7 +73,6 @@ object FrmBooks: TFrmBooks
     VisibleButtons = [nbFirst, nbLast, nbDelete, nbPost, nbCancel]
     Align = alTop
     TabOrder = 1
-    ExplicitWidth = 1199
   end
   object Panel1: TPanel
     Left = 0
@@ -83,7 +82,6 @@ object FrmBooks: TFrmBooks
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitWidth = 1205
     object Splitter1: TSplitter
       Left = 225
       Top = 0
@@ -261,7 +259,6 @@ object FrmBooks: TFrmBooks
     WordWrap = wwNone
     DataField = 'description'
     DataSource = DbManager.sourceBooks
-    ExplicitWidth = 1205
   end
   object DlgOpenImage: TOpenImageEnDialog
     ZoomFilter = rfLanczos3

@@ -57,7 +57,7 @@ object FrmAvail: TFrmAvail
     OnClickCheck = StoresClickCheck
   end
   object sourceEditions: TDataSource
-    Left = 728
-    Top = 232
+    Left = 88
+    Top = 128
   end
 end

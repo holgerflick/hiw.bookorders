@@ -9,6 +9,7 @@ type
   TServiceManager = class(TWebDataModule)
     Request: TWebHttpRequest;
     procedure WebDataModuleCreate(Sender: TObject);
+    procedure WebDataModuleDestroy(Sender: TObject);
   private
     FPayload: TPayload;
 
@@ -110,7 +111,7 @@ begin
     LBookObj := TJSObject( LBooksArr[i] );
     LBook := TBookDTO.Create;
     LBook.Id := JS.toInteger( LBookObj['id'] );
-    LBook.PubDate := TBclUtils.ISOToDate( COPY( JS.toString( LBookObj['pubDate'] ), 1, 10 ) );
+    LBook.PubDate := TBclUtils.ISOToDate( JS.toString( LBookObj['pubDate'] ) );
     LBook.Title := JS.toString( LBookObj['title'] );
     LBook.Subtitle := JS.toString( LBookObj['subtitle'] );
     LBook.Description := JS.toString( LBookObj['description'] );
@@ -118,17 +119,8 @@ begin
     LEncoded := JS.toString( LBookObj['cover'] );
     if LEncoded <> '' then
     begin
-//      LBytes := TBytesStream.Create( TBclUtils.DecodeBase64(LEncoded) );
-//      try
-//        LBytes.Position := 0;
-//        LBook.Cover.LoadFromStream(LBytes);
-//      finally
-//        LBytes.Free;
-//      end;
-
-       LEncoded := 'data:image/png;base64,' + LEncoded;
+       LEncoded := 'data:image/jpeg;base64,' + LEncoded;
        LBook.CoverDataUrl := LEncoded;
-       console.log(LEncoded);
     end;
 
     // editions
@@ -181,6 +173,11 @@ end;
 procedure TServiceManager.WebDataModuleCreate(Sender: TObject);
 begin
   FPayload := nil;
+end;
+
+procedure TServiceManager.WebDataModuleDestroy(Sender: TObject);
+begin
+  FPayload.Free;
 end;
 
 end.

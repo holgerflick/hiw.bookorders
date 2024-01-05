@@ -1,6 +1,6 @@
 object FrmOrder: TFrmOrder
   Width = 640
-  Height = 412
+  Height = 413
   CSSLibrary = cssBootstrap
   ElementFont = efCSS
   OnCreate = WebFormCreate

@@ -65,6 +65,7 @@ type
     property PubDate: TDate read FPubDate write FPubDate;
     property Title: String read FTitle write FTitle;
     property Subtitle: String read FSubtitle write FSubtitle;
+
     property Cover: TMemoryStream read FCover write FCover;
 
     // This will only be used by the TMS WEB Core client. Will be empty in

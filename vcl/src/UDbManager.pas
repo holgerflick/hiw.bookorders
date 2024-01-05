@@ -70,8 +70,11 @@ type
     procedure DataModuleDestroy(Sender: TObject);
   strict private
     class var FInstance: TDbManager;
+
   private
     { Private declarations }
+    function SaveCoverAndGetFilename(ABlob: TBlobField; AWidth, AId: Integer;
+        AFolder: String): String;
   public
     { Public declarations }
     class destructor Destroy;
@@ -102,6 +105,8 @@ uses
   , hyieutils
   , iexBitmaps
   , iexDBBitmaps
+
+  , System.DateUtils
   ;
 
 {%CLASSGROUP 'Vcl.Controls.TControl'}
@@ -147,6 +152,33 @@ begin
   comRemoveUnavail.ParamByName('editionId').AsInteger := AEditionId;
   comRemoveUnavail.ParamByName('storeId').AsInteger := AStoreId;
   comRemoveUnavail.Execute;
+end;
+
+function TDbManager.SaveCoverAndGetFilename(ABlob: TBlobField;
+  AWidth, AId: Integer; AFolder: String): String;
+begin
+  var LImgFileName := Format(
+    'cover_%d_%d.png',
+    [ AId, AWidth ]
+    );
+  var LImgPath := TPath.Combine( AFolder, LImgFilename );
+
+  var LCover := TIEDBBitmap.Create;
+  try
+    LCover.Read(ABlob);
+    LCover.Resample(AWidth, -1, rfLanczos3);
+
+    var LOutput := TFileStream.Create(LImgPath, fmCreate );
+    try
+      LCover.Write(LOutput, ioPNG);
+    finally
+      LOutput.Free;
+    end;
+  finally
+    LCover.Free;
+  end;
+
+  Result := LImgFileName;
 end;
 
 procedure TDbManager.SaveToJson(AFilename: String);
@@ -235,8 +267,12 @@ begin
       ;
 
     var LJSON := TNeon.ObjectToJSON(LPayload, LConfig);
+    try
+      TFile.WriteAllText(AFilename, LJSON.ToString);
+    finally
+      LJSON.Free;
+    end;
 
-    TFile.WriteAllText(AFilename, LJSON.ToString);
   finally
     LPayload.Free;
   end;
@@ -246,7 +282,6 @@ procedure TDbManager.SaveToMarkdown(AFolder: String);
 const
   MD_SEP_CENTER = ' :---: |';
   MD_SEP_LEFT = ' :--- |';
-  COVER_WIDTH = 250;
 
 var
   LLines: TStringList;
@@ -254,69 +289,61 @@ var
 begin
   LLines := TStringList.Create;
 
-  var LIndex := TPath.Combine( AFolder, 'index.md' );
-
   try
     qryBooks.First;
 
     var LHeader :=
     '''
     ---
-        tags:
-            - Delphi
+    date: %s
+    hide:
+       - navigation
+    tags:
+       - Delphi
     ---
     ''';
 
     var LCount := 0;
     while not qryBooks.Eof do
     begin
+      var LDateIso := COPY( qryBooksPublished.AsDateTime.ToISO8601, 1, 10 );
+
+      var LImageFileNameBig: String := '#';
+      var LImageFileNameSmall: String := '#';
+
+      if not qryBookscover.IsNull then
+      begin
+        // cover
+        LImageFileNameBig := SaveCoverAndGetFilename( qryBooksCover, 250, qryBooksId.AsInteger, AFolder );
+        LImageFileNameSmall := SaveCoverAndGetFilename( qryBooksCover, 75, qryBooksId.AsInteger, AFolder );
+      end;
+
       LLines.Clear;
-      LLines.Add( Format(
-        LHeader,
-        [ qryBooksTitle.AsString, qryBooksSubtitle.AsString ] )
+      LLines.Add(
+       Format( LHeader,
+         [LDateIso]
+       )
       );
 
       var LTitle := qryBooksTitle.AsString;
       LLines.Add('# ' + LTitle );
-
+      LLines.Add( '![Small Cover](' + LImageFileNameSmall + '){ align=left }' );
       if not qryBookssubtitle.AsString.IsEmpty then
       begin
-        LLines.Add('*' + qryBookssubtitle.AsString + '*');
+        LLines.Add( qryBookssubtitle.AsString);
       end;
 
-      LLines.Add('');
+      LLines.Add('<!-- more -->');
 
       LLines.Add( qryBooksDescription.AsString );
       LLines.Add('');
 
       LLines.Add('## Learn more');
-      if not qryBookscover.IsNull then
-      begin
-        // cover
-        var LImgFileName := Format(
-          'cover_%d_%d.png',
-          [ qryBooksid.AsInteger, COVER_WIDTH ]
-          );
-        var LImgPath := TPath.Combine( AFolder, LImgFilename );
 
-        var LCover := TIEDBBitmap.Create;
-        try
-          LCover.Read(qryBookscover);
+      LLines.Add('![Cover image](' + LImageFileNameBig + '){ align=left }');
 
-          LCover.Resample(250, -1, rfLanczos3);
 
-          var LOutput := TFileStream.Create(LImgPath, fmCreate );
-          try
-            LCover.Write(LOutput, ioPNG);
-          finally
-            LOutput.Free;
-          end;
-        finally
-          LCover.Free;
-        end;
-
-        LLines.Add('![Cover image](' + LImgFileName + '){align=left}');
-      end;
+      // start building table
 
       var LBuffer := '| Store | ';
       var LSep := '|' + MD_SEP_LEFT;
@@ -370,11 +397,22 @@ begin
       LLines.Add('');
 
       Inc(LCount);
-      var LBookFile := TPath.Combine(
-          AFolder,
-          Format( 'book%d.md', [ LCount ] )
-          );
 
+      // -- implementation from video uses count to order books
+      //      var LBookFile := TPath.Combine(
+      //          AFolder,
+      //          Format( 'book%d.md', [ LCount ] )
+      //          );
+
+      // -- for permanent links using the ID of the book is better
+      var LBookFile := TPath.Combine(
+        AFolder,
+        Format( 'book%d-%d-%d.md', [
+          qryBooksId.AsInteger,
+          YearOf(qryBooksPublished.AsDateTime),
+          MonthOf(qryBooksPublished.AsDateTime)
+          ] )
+        );
 
       LLines.SaveToFile(LBookFile);
 

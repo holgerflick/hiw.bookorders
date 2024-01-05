@@ -143,17 +143,21 @@ begin
     Stores.Items.Clear;
 
     while not FAllStores.Eof do begin
+
       var LIndex := Stores.Items.AddObject(
         FAllStores.FieldByName('Name').AsString,
         TObject( FAllStores.FieldByName('Id').AsInteger )
          );
 
-      var LIsUnavail := FUnavailStores.Locate('id', FAllStores.FieldByName('id').AsInteger, [] );
+      var LIsUnavail :=
+        FUnavailStores.Locate('id', FAllStores.FieldByName('id').AsInteger, [] );
 
       Stores.Checked[LIndex] := NOT LIsUnavail;
 
       FAllStores.Next;
     end;
+
+    FAllStores.GotoBookmark(LBookmark);
   finally
     FAllStores.FreeBookmark(LBookmark);
     FAllStores.EnableControls;
